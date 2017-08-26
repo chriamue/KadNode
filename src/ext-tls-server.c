@@ -20,14 +20,14 @@
 #include "mbedtls/oid.h"
 #include "mbedtls/error.h"
 
-#include "kadnode/main.h"
-#include "kadnode/conf.h"
-#include "kadnode/log.h"
-#include "kadnode/utils.h"
-#include "kadnode/kad.h"
-#include "kadnode/net.h"
-#include "kadnode/searches.h"
-#include "kadnode/ext-tls-server.h"
+#include "main.h"
+#include "conf.h"
+#include "log.h"
+#include "utils.h"
+#include "kad.h"
+#include "net.h"
+#include "searches.h"
+#include "ext-tls-server.h"
 
 
 /*
@@ -311,7 +311,7 @@ void tls_server_setup( void ) {
 	int ret;
 
 	// Without SNI entries, there is no reason to start the TLS server
-	if( g_sni_entries ) {
+	if( g_sni_entries == NULL ) {
 		return;
 	}
 

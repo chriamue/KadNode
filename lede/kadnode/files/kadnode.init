@@ -6,12 +6,9 @@ LIST_SEP="
 "
 KADNODE_BIN=/usr/bin/kadnode
 
-count() {
-	echo $#
-}
 
 append_opts() {
-	local p; local vl; local v; local s="$1"; shift
+	local p vl v s="$1"; shift
 	for p in $*; do
 		config_get vl "$s" "$p"
 		local IFS_OLD="$IFS"; IFS="
@@ -25,7 +22,7 @@ append_opts() {
 }
 
 append_opts_boolean() {
-  local p; local v; local s="$1"; shift
+  local p v s="$1"; shift
   for p in $*; do
         config_get_bool v "$s" "$p"  0
         [ $v -gt 0  ] && OPTS="$OPTS

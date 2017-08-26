@@ -1,7 +1,7 @@
 
 CC ?= gcc
 CFLAGS ?= -Os -Wall -Wwrite-strings -pedantic
-CFLAGS += -std=gnu99 -Iinclude -I/usr/local/include
+CFLAGS += -std=gnu99 -I/usr/local/include
 LFLAGS += -L/usr/local/lib -lc
 FEATURES ?= dns lpd tls bob cmd debug #nss natpmp upnp
 
@@ -80,7 +80,7 @@ ifeq ($(ENABLE_FORWARDING),1)
 endif
 
 
-build/%.o : src/%.c include/kadnode/%.h
+build/%.o : src/%.c src/%.h
 	$(CC) $(CFLAGS) -c -o $@ $<
 
 kadnode-ctl:
@@ -90,14 +90,14 @@ libnss-kadnode.so.2:
 	$(CC) $(CFLAGS) -fPIC -c -o build/ext-libnss.o src/ext-libnss.c
 	$(CC) $(CFLAGS) -fPIC -shared -Wl,-soname,libnss_kadnode.so.2 -o build/libnss_kadnode.so.2 build/ext-libnss.o
 
-libkadnode.a: clean build/libkadnode.o $(OBJS)
+libkadnode.a: build/libkadnode.o $(OBJS)
 	ar rcs build/libkadnode.a build/libkadnode.o $(OBJS)
 
 libkadnode.so: CFLAGS += -fpic
-libkadnode.so: clean build/libkadnode.o $(OBJS)
+libkadnode.so: build/libkadnode.o $(OBJS)
 	$(CC) -shared $(OBJS) build/libkadnode.o -o build/libkadnode.so
 
-kadnode: clean build/main.o $(OBJS) $(EXTRA)
+kadnode: build/main.o $(OBJS) $(EXTRA)
 	$(CC) build/main.o $(OBJS) -o build/kadnode $(LFLAGS)
 
 clean:
@@ -120,7 +120,9 @@ osx-pkg:
 	cd macosx && ./build.sh
 
 freebsd-pkg:
-	cd freebsd && make package
+	git archive master --prefix kadnode/ -o freebsd/kadnode.tar.gz
+	cd freebsd
+	make package
 
 install:
 	cp build/kadnode $(DESTDIR)/usr/bin/ 2> /dev/null || true

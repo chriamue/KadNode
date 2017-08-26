@@ -2,27 +2,22 @@
 # $FreeBSD$
 
 PORTNAME=	kadnode
-PORTVERSION=	1.0.0
+PORTVERSION=	2.0.0
 PORTREVISION=	1
 CATEGORIES=	dns
-MASTER_SITES=	https://github.com/mwarning/KadNode/archive/
-DISTNAME=	v${DISTVERSION}${DISTVERSIONSUFFIX}
-
+DISTDIR=	${PWD}
 MAINTAINER=	moritzwarning@web.de
 COMMENT=	P2P name resolution daemon
-
 LICENSE=	MIT
-
-USES=	gmake
-WRKSRC=		${WRKDIR}/KadNode-${DISTVERSION}
-
+USES=		gmake
+WRKSRC=		${WRKDIR}/KadNode
 OPTIONS_DEFINE=	AUTH CMD DEBUG DNS LPD NATPMP NSS UPNP
-AUTH_DESC=	Authorization support based on libsodium.
+AUTH_DESC=	Authorization support based on mbedtls.
 CMD_DESC=	Command line control tool kadnode-ctl.
 DEBUG_DESC=	Build with debug messages and symbols.
 DNS_DESC=	Include local DNS interface.
 LPD_DESC=	Local peer discovery.
-NATPMP_DESC=	 NAT-PMP support. Enables remote port forwarding on the router.
+NATPMP_DESC=	NAT-PMP support. Enables remote port forwarding on the router.
 NSS_DESC=	Name Service Switch support to intercept host queries (/etc/nsswitch.conf).
 UPNP_DESC=	UPnP support. Enable remote port forwarding on the router.
 
@@ -31,8 +26,8 @@ OPTIONS_DEFAULT=	AUTH CMD LPD NSS
 .include <bsd.port.options.mk>
 
 .if ${PORT_OPTIONS:MAUTH}
-FEATURES+=auth
-DEPENDS+=	${PORTSDIR}/security/libsodium
+FEATURES+=bob tls
+DEPENDS+=	${PORTSDIR}/security/mbedtls
 .endif
 
 .if ${PORT_OPTIONS:MCMD}

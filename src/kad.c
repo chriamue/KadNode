@@ -4,16 +4,16 @@
 #include <sys/time.h>
 #include <assert.h>
 
-#include "kadnode/log.h"
-#include "kadnode/main.h"
-#include "kadnode/utils.h"
-#include "kadnode/conf.h"
-#include "kadnode/utils.h"
-#include "kadnode/net.h"
-#include "kadnode/searches.h"
-#include "kadnode/announces.h"
+#include "log.h"
+#include "main.h"
+#include "utils.h"
+#include "conf.h"
+#include "utils.h"
+#include "net.h"
+#include "searches.h"
+#include "announces.h"
 #ifdef BOB
-#include "kadnode/ext-bob.h"
+#include "ext-bob.h"
 #endif
 
 #include "dht.c"
@@ -231,11 +231,11 @@ void dht_hash( void *hash_return, int hash_size,
 	assert( len2 == 4 || len2 == 16 );
 	if( len2 == 4 ) {
 		const uint32_t d2 = *((uint32_t*) v2);
+		hash.num2[0] ^= d2;
 		hash.num2[1] ^= d2;
-		hash.num2[2] ^= d2;
 	} else {
-		hash.num1[1] ^= *((uint64_t*) v2);
-		hash.num1[1] ^= *((uint64_t*) v2 + 8);
+		hash.num1[0] ^= *((uint64_t*) v2);
+		hash.num1[0] ^= *((uint64_t*) v2 + 8);
 	}
 
 	assert( len3 == 2 );

@@ -10,13 +10,13 @@
 #include <unistd.h>
 #include <assert.h>
 
-#include "kadnode/main.h"
-#include "kadnode/conf.h"
-#include "kadnode/log.h"
-#include "kadnode/utils.h"
-#include "kadnode/net.h"
-#include "kadnode/kad.h"
-#include "kadnode/ext-lpd.h"
+#include "main.h"
+#include "conf.h"
+#include "log.h"
+#include "utils.h"
+#include "net.h"
+#include "kad.h"
+#include "ext-lpd.h"
 
 
 enum {
@@ -56,7 +56,7 @@ static void handle_mcast( int rc, struct LPD_STATE* lpd ) {
 		// No peers known, send multicast
 		if( kad_count_nodes( 0 ) == 0 ) {
 			log_debug( "LPD: Try to send hello to %s", str_addr( &lpd->mcast_addr ) );
-			sprintf( buf, "DHT %hu", gconf->dht_port );
+			sprintf( buf, "DHT %d", gconf->dht_port );
 			sendto( lpd->sock_send, (void const*) buf, strlen(buf), 0, (struct sockaddr const*) &lpd->mcast_addr, sizeof(IP) );
 		}
 
@@ -153,13 +153,15 @@ fail:
 static int create_receive_socket( const IP *addr, const char ifname[] ) {
 	const int opt_off = 0;
 	const int af = addr->ss_family;
+	socklen_t addrlen;
 	int sock;
 
 	if( (sock = net_socket( "LPD", ifname, IPPROTO_IP, af ) ) < 0 ) {
 		goto fail;
 	}
 
-	if( bind( sock, (struct sockaddr*)addr, sizeof(IP) ) != 0) {
+	addrlen = addr_len( addr );
+	if( bind( sock, (struct sockaddr*)addr, addrlen ) != 0) {
 		goto fail;
 	}
 
@@ -183,7 +185,7 @@ static int create_receive_socket( const IP *addr, const char ifname[] ) {
 		memcpy( &mreq6.ipv6mr_multiaddr, &((IP6*) addr)->sin6_addr, 16 );
 		mreq6.ipv6mr_interface = ifname ? if_nametoindex( ifname ) : 0;
 
-		if( setsockopt( sock, IPPROTO_IPV6, IPV6_ADD_MEMBERSHIP, &mreq6, sizeof(mreq6) ) < 0 ) {
+		if( setsockopt( sock, IPPROTO_IPV6, IPV6_JOIN_GROUP /* IPV6_ADD_MEMBERSHIP */, &mreq6, sizeof(mreq6) ) < 0 ) {
 			goto fail;
 		}
 	}
