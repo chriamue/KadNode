@@ -12,7 +12,7 @@ option(LPD		"lpd"		OFF)
 option(TLS		"tls"		OFF)
 option(BOB		"bob"		OFF)
 
-file(GLOB_RECURSE headers include/kadnode/*.h)
+file(GLOB_RECURSE headers src/*.h)
 
 set(sources
 	src/announces.c
@@ -65,7 +65,7 @@ if(BOB)
 	add_definitions(-DBOB)
 endif(BOB)
 
-file(COPY ${headers} DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/include/kadnode/)
+file(COPY src/libkadnode.h DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/include/libkadnode.h)
 
 add_library( libkadnode src/libkadnode.c ${sources} ${headers} )
 
